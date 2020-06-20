@@ -1,6 +1,7 @@
 # Table of contents
 * [介绍](README.md)
 * [JavaScript](javascript)
+    * [Number](javascript/Number.md)
     * [作用域是什么](javascript/作用域是什么.md)
     * [词法作用域](javascript/词法作用域.md)
 * [数据结构与算法](dataStructure)
@@ -11,4 +12,5 @@
 * [浏览器相关](browser)
     * [浏览器打印](browser/print.md)
     * [v8总结](browser/v8.md)
+    * [消息队列以及事件循环](browser/消息队列以及事件循环.md)
 
