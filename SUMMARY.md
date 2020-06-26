@@ -7,6 +7,7 @@
     * [函数级、块级作用域](javascript/函数级作用域和块级作用域.md)
     * [变量提升](javascript/变量提示.md)
     * [作用域闭包](javascript/作用域闭包.md)
+    * [this关键字](javascript/this关键字.md)
 * [数据结构与算法](dataStructure)
     * [排序算法](dataStructure/sortArithmetic.md)
     * [树](dataStructure/tree.md)
