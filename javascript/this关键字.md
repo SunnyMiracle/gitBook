@@ -221,4 +221,145 @@ console.log(bar.a); // 2
 ```
 
 ### this绑定规则优先级
+首先先明确优先级顺序依次为：
+1. 默认绑定
+2. 隐式绑定
+3. 显示绑定
+4. new关键字绑定
+这里只着重说一下显示绑定以及new 关键字的优先级顺序。首先apply 跟 call函数执行之后不会返回一个函数，因此无法进行
+构造调用，因此没办法验证，但是bind函数会返回一个函数，是可以构造调用的，因此可以用bind做一个比较。
 
+思考我们之前自己实现的 硬绑定 公共函数：
+```javascript
+function bind(obj, fn) {
+    return function() {
+        return fn.apply(obj, arguments);
+    }
+}
+```
+再看下边例子：
+```javascript
+function foo(a) {
+    this.a = a;
+}
+const obj = {};
+var bar = foo.bind(obj);
+bar(2);
+console.log(obj.a); // 2
+const baz = new bar(3);
+console.log(obj.a); // 2
+console.log(baz.a); // 3
+```
+上边的结果证明了实例化之后的结果跟 obj没有关系，因此可以推导出实例化new关键字的优先级大于显示绑定。
+首先需要明确的是 "构造调用" 跟普通函数调用的差别之处，参考上文提到的。事实上JavaScript内置的bind函数比我们
+自己实现的要复杂很多，可以参考MDN提供的一种bind polyfill
+```javascript
+Function.prototype.bind = function(oThis) {
+    if (typeof this !== "function") { // 与 ECMAScript 5 最接近的 // 内部 IsCallable 函数
+        throw new TypeError("Function.prototype.bind - what is trying " + "to be bound is not callable");
+    }
+    var aArgs = Array.prototype.slice.call( arguments, 1 );
+    var fToBind = this;
+    var fNOP = function(){};
+    var fBound = function() {
+        return fToBind.apply(
+            (
+                this instanceof fNOP &&
+                oThis ? this : oThis
+            ),
+            aArgs.concat(Array.prototype.slice.call( arguments ))
+        )
+    };
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+    return fBound;
+};
+```
+分析一下这个函数。首先最后的返回值是fBound这个函数，分两种情况来看：
+- 正常调用
+
+正常调用情况下，首先明确this的指向，可以参考前三种this绑定规则，这三种规则中都不会涉及到实例化操作，因此this instanceof fNOP
+的值肯定是false，所以导致fToBind.apply 执行的对象就是我们bind的对象也即是oThis。
+
+- 构造调用
+
+构造调用情况下，参考上边提到的new关键字绑定中说的四点区别，第二点为原型连接，因此当前函数执行的this就是fBound的实例，同时
+看到有语句 fBound.prototype = new fNOP(),因此 this instanceof fNOP的为TRUE。
+
+上边的例子中也看到了，bind之后的返回的函数还是可以构造调用的，也是符合我们的预期的，不会影响到bind的对象，除此之外，这种
+编码方式还有其他的好处，首先bind 会将除第一个参数之外的其他参数都传递到被绑定的函数，因此可以实现参数的预先设置，
+我们称之为 "参数预制" 或者叫 "部分应用" 这是 "柯力化" 的一种。看下边例子：
+```javascript
+function foo(arg1, arg2) {
+    this.total = arg1 + arg2;
+}
+const bar = foo.bind(null, 10);
+const instance = new bar(5);
+console.log(instance.total); // 15
+```
+
+### 绑定的其他情况
+
+上述this绑定的四种规则，有时会失效。
+#### 被忽略的this
+```javascript
+function foo() {
+    console.log(this.a);
+}
+var a = 2;
+foo.call(null); // 2
+```
+事实上 如果把 null undefined 作为this绑定对象传入到call apply 或者bind 时，实际上this绑定规则是默认规则，所以
+是全局的变量 a。
+
+但是很多情况下我们会有用到apply来 "展开" 一个数组，或者使用bind实现 柯力化（预先设置一些参数）都会绑定this为null
+```javascript
+function foo(a, b) {
+    console.log(a, b);
+}
+foo.apply(null, [1, 3]); // 1, 3
+foo.bind(null, 1)(2); // 1, 2
+```
+可以通过Object.create(null) 来创造一个空对象，作为this的绑定。
+
+#### 间接引用
+另一个需要注意的是，你可能有意或者无意的创建一个函数的 "间接引用" 在这种情况下，函数调用活应用默认绑定规则。
+```javascript
+function foo() {
+    console.log(this.a);
+}
+var a = 2;
+var obj = {
+    a: 3,
+    foo,
+}
+var p = {
+    a: 4,
+}
+obj.foo(); // 3
+(p.foo = obj.foo)(); // 2
+```
+上边代码中赋值语句的返回值是目标函数的引用，也就是foo函数，因此应用了默认绑定。
+
+#### 箭头函数
+
+ES6引入了箭头函数，箭头函数可以绑定当前函数词法作用下的this，如果当前箭头函数是类的一个方法，则箭头函数所获取到的this就是
+这个类的实例，如果这个箭头函数定义在一个函数中，则this就是外包裹函数执行上下文的this指向。
+```javascript
+class Foo {
+    constructor() {
+        this.name = 'name';
+    }
+    sayName = () => {
+        console.log(this.name);
+    }
+    sayNameNormal() {
+        console.log(this.name);
+    }
+}
+const instance = new Foo();
+const { sayName, sayNameNormal } = instance;
+sayName(); // name
+sayNameNormal(); // TypeError: Cannot read property 'name' of undefined
+```
+上述代码说明，如果通过引用直接获取到sayNameNormal 然后执行的话，this不是Instance。而sayName则正确绑定着this。
