@@ -8,6 +8,8 @@
     * [变量提升](javascript/变量提示.md)
     * [作用域闭包](javascript/作用域闭包.md)
     * [this关键字](javascript/this关键字.md)
+    * [对象](javascript/对象.md)
+    * [原型](javascript/原型.md)
 * [数据结构与算法](dataStructure)
     * [排序算法](dataStructure/sortArithmetic.md)
     * [树](dataStructure/tree.md)
