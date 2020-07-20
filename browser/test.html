@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <style>
+        .testDiv {
+            border: 1px solid red;
+            height: 200px;
+            padding: 20px;
+        }
+        .inner {
+            float: right;
+            height: 20px;
+            width: 30px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div class="testDiv">
+        <div class="inner">
+            inner
+        </div>
+    </div>
+</body>
+<script>
+    const frame = document.getElementsByClassName('testDiv')[0];
+    const inner = document.getElementsByClassName('inner');
+
+    const style = window.getComputedStyle(frame, null);
+    alert(style.width);
+    alert(style.borderWidth)
+</script>
+</html>
