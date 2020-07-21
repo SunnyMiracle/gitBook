@@ -27,4 +27,5 @@
     * [相关概念](react/概念相关.md)
     * [DOM diff](react/DomDiff.md)
     * [Ref](react/ref.md)
+    * [ReduxMiddleware](react/reduxMiddleware.md)
 
