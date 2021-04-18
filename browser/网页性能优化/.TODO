@@ -1,0 +1,9 @@
+// TODO 内容需要补充，
+
+https://web.dev/fast/#prioritize-resources
+
+script标签的 async deffer 属性的设置。。
+link标签的 rel 设置为 dns-prefetch 或者 preConnect 等&……
+
+这些内容待补充。
+
