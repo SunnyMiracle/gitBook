@@ -58,4 +58,4 @@ store.dispatch(action)的时候，就会执行这个嵌套函数，也就是fn1(
 对于fn1 来说next参数就是 fn2(fn3(store.dispatch)), 对于fn3来说next就是 store.dispatch。
 提别说明，这里的store指的是dispatch未替换之前的store，因此最后一层会直接触发最终的reducer
 
-函数嵌套执行，调用栈执行到最低端，之后再出栈执行。
+函数嵌套执行，调用栈执行到最低端，之后再出栈执行。所以达成洋葱模型。
