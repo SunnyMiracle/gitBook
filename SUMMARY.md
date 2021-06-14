@@ -11,7 +11,7 @@
     * [对象](javascript/对象.md)
     * [原型](javascript/原型继承/原型.md)
 * [数据结构与算法](dataStructure)
-    * [排序算法](dataStructure/sortArithmetic.md)
+    * [排序算法](dataStructure/排序/sortArithmetic.md)
     * [树](dataStructure/tree.md)
     * [递归](dataStructure/递归.md)
 * [Node相关](node)
